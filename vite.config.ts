@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  cacheDir: './node_modules/.vite/frontend-cloud-camp2',
+  cacheDir: './node_modules/.vite/frontend-cloud-camp',
 
   server: {
     port: 4200,

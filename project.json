@@ -1,5 +1,5 @@
 {
-  "name": "frontend-cloud-camp2",
+  "name": "frontend-cloud-camp",
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "./src",
   "projectType": "application",
@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/frontend-cloud-camp2"
+        "outputPath": "dist/frontend-cloud-camp"
       },
       "configurations": {
         "development": {
@@ -24,15 +24,15 @@
       "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "frontend-cloud-camp2:build"
+        "buildTarget": "frontend-cloud-camp:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "frontend-cloud-camp2:build:development",
+          "buildTarget": "frontend-cloud-camp:build:development",
           "hmr": true
         },
         "production": {
-          "buildTarget": "frontend-cloud-camp2:build:production",
+          "buildTarget": "frontend-cloud-camp:build:production",
           "hmr": false
         }
       }
@@ -41,23 +41,23 @@
       "executor": "@nx/vite:preview-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "frontend-cloud-camp2:build"
+        "buildTarget": "frontend-cloud-camp:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "frontend-cloud-camp2:build:development"
+          "buildTarget": "frontend-cloud-camp:build:development"
         },
         "production": {
-          "buildTarget": "frontend-cloud-camp2:build:production"
+          "buildTarget": "frontend-cloud-camp:build:production"
         }
       }
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["coverage/frontend-cloud-camp2"],
+      "outputs": ["coverage/frontend-cloud-camp"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "coverage/frontend-cloud-camp2"
+        "reportsDirectory": "coverage/frontend-cloud-camp"
       }
     },
     "lint": {
@@ -70,7 +70,7 @@
     "serve-static": {
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "frontend-cloud-camp2:build"
+        "buildTarget": "frontend-cloud-camp:build"
       }
     }
   },

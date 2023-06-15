@@ -1,11 +1,12 @@
 {
-  "name": "@frontend-cloud-camp2/source",
+  "name": "@frontend-cloud-camp/source",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "lint": "nx lint"
   },
   "private": true,
   "dependencies": {
@@ -13,6 +14,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-is": "18.2.0",
+    "react-router-dom": "^6.13.0",
     "styled-components": "5.3.6"
   },
   "devDependencies": {
