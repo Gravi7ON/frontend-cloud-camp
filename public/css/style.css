@@ -709,7 +709,6 @@ textarea:hover {
   z-index: 10;
   position: absolute;
   width: 900px;
-  height: 821px;
   left: calc(50% - 900px / 2);
   top: 24px;
   background: #ffffff;
@@ -1035,4 +1034,85 @@ textarea:hover {
 .popup-form-step-one__steps {
   text-align: center;
   margin-top: 62px;
+}
+
+#advantages-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.advantages-list__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0 0 0;
+}
+
+.input-trash__remove {
+  transition: all ease 0.2s;
+}
+
+.input-trash__remove:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+.input-trash__remove:active {
+  cursor: pointer;
+  transform: scale(0.9);
+}
+
+#button-add {
+  margin: 8px 0 0 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #5558fa;
+  border-radius: 4px;
+  transition: all ease 0.3s;
+  background-color: #ffffff;
+  color: #5558fa;
+  font-size: 28px;
+}
+
+#button-add:hover {
+  color: #3b3ee2;
+  border-color: #3b3ee2;
+  cursor: pointer;
+}
+
+#button-add:active {
+  transform: scale(0.9);
+}
+
+#checkbox-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#radio-button-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.checkbox-list-container {
+  display: flex;
+  align-items: center;
+}
+
+.field-checkbox-groupe-option {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  margin-right: 8px;
+  border: 1.5px solid #c2c2c2;
+  border-radius: 4px;
+  cursor: pointer;
 }
