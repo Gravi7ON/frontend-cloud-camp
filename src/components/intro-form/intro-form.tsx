@@ -1,9 +1,38 @@
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import InputMask from 'react-input-mask';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import Layout from 'src/components/layouts/layout';
 import { AppRoute } from 'src/constant';
 
+const validationSchema = yup
+  .object({
+    phone: yup
+      .string()
+      .matches(/^\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}$/g, 'enter your phone')
+      .required(),
+    email: yup
+      .string()
+      .matches(/.+@.+\..+/gi, 'email must be a valid email')
+      .required(),
+  })
+  .required();
+type FormData = yup.InferType<typeof validationSchema>;
+
 export default function IntroForm(): JSX.Element {
   const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
 
   return (
     <Layout>
@@ -94,25 +123,32 @@ export default function IntroForm(): JSX.Element {
           <span className="popup-form__divider"></span>
         </div>
         <div className="popup-form__form">
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <label>
               <span className="input__label">Номер телефона</span>
-              <input
-                name="phone"
-                defaultValue="+7(___)___-__-__"
+              <InputMask
+                mask="+7 (999) 999-99-99"
+                alwaysShowMask
+                maskPlaceholder="+7 (___) ___-__-__"
+                {...register('phone')}
               />
+              {errors.phone && (
+                <span className="input__error-message">
+                  {errors.phone.message}
+                </span>
+              )}
             </label>
             <label>
               <span className="input__label">Email</span>
-              <input
-                type="email"
-                name="tel"
-              />
+              <input {...register('email')} />
+              {errors.email && (
+                <span className="input__error-message">
+                  {errors.email.message}
+                </span>
+              )}
             </label>
             <button
-              onClick={(evt) => {
-                navigate(AppRoute.StepOne);
-              }}
+              type="submit"
               id="button-start"
               className="popup-form__button-start"
             >

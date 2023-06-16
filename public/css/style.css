@@ -1116,3 +1116,14 @@ textarea:hover {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.input__error-message {
+  color: red;
+  font-size: 12px;
+  text-align: end;
+}
+
+button:active {
+  transform: scale(0.95);
+  transition: 0.15s;
+}
