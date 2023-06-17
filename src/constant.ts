@@ -11,3 +11,8 @@ export enum NameSpaceStore {
   StepTwoForm = 'STEP_TWO_FORM',
   StepThreeForm = 'STEP_THREE_FORM',
 }
+
+export enum ButtonNavigateMarker {
+  Back = 'back',
+  Next = 'next',
+}

@@ -1,9 +1,69 @@
 import { useNavigate } from 'react-router-dom';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import * as yup from 'yup';
 import Layout from '../layouts/layout';
-import { AppRoute } from 'src/constant';
+import { AppRoute, ButtonNavigateMarker } from 'src/constant';
+import { useAppDispatch, useAppSelector } from 'src/hooks/store.hooks';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { getStepOneFormValues } from 'src/store/step-one-form/selectors';
+import { setStepOneFormValues } from 'src/store/step-one-form/step-one-form';
+
+const MAX_NICKNAME_CHAR = 30;
+const MAX_NAME_CHAR = 50;
+
+const enum Sex {
+  Man = 'man',
+  Woman = 'woman',
+}
+
+const userNameValidationSchema = yup
+  .string()
+  .max(MAX_NAME_CHAR)
+  .required()
+  .matches(/^[a-zа-яё]+$/gi, 'only letters');
+
+const validationSchema = yup
+  .object({
+    nickname: yup
+      .string()
+      .max(MAX_NICKNAME_CHAR)
+      .required()
+      .matches(/^[0-9a-zа-яё]+$/gi, 'only letters or number'),
+    name: userNameValidationSchema,
+    surname: userNameValidationSchema,
+    sex: yup
+      .string()
+      .required()
+      .matches(/(man|woman)/, 'only man or woman'),
+  })
+  .required();
+type FormData = yup.InferType<typeof validationSchema>;
 
 export default function StepOneForm(): JSX.Element {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const { nickname, name, surname, sex } = useAppSelector(getStepOneFormValues);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<FormData> = (formData, event) => {
+    dispatch(setStepOneFormValues(formData));
+
+    const detail = (event?.nativeEvent as CustomEvent).detail;
+    if (detail === ButtonNavigateMarker.Back) {
+      navigate(AppRoute.Intro);
+    } else {
+      navigate(AppRoute.StepTwo);
+    }
+  };
 
   return (
     <Layout>
@@ -76,71 +136,84 @@ export default function StepOneForm(): JSX.Element {
           </svg>
         </div>
         <div className="popup-form__form-step-one">
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <label>
               <span className="input__label">Nickname</span>
               <input
                 id="field-nickname"
                 className="step-one"
-                name="nickname"
                 placeholder="Placeholder"
+                defaultValue={nickname}
+                {...register('nickname')}
               />
-              <span className="input-error_message"></span>
+              <span className="input-error_message input__error-message">
+                {errors.nickname && `${errors.nickname.message}`}
+              </span>
             </label>
             <label>
               <span className="input__label">Name</span>
               <input
                 id="field-name"
                 className="step-one"
-                name="name"
                 placeholder="Placeholder"
+                defaultValue={name}
+                {...register('name')}
               />
-              <span className="input-error_message"></span>
+              <span className="input-error_message input__error-message">
+                {errors.name && `${errors.name.message}`}
+              </span>
             </label>
             <label>
               <span className="input__label">Surname</span>
               <input
                 id="field-surname"
                 className="step-one"
-                name="surmane"
                 placeholder="Placeholder"
+                defaultValue={surname}
+                {...register('surname')}
               />
-              <span className="input-error_message"></span>
+              <span className="input-error_message input__error-message">
+                {errors.surname && `${errors.surname.message}`}
+              </span>
             </label>
             <label>
               <span className="input__label">Sex</span>
               <select
                 id="field-sex"
                 className="step-one"
-                name="sex"
+                defaultValue={sex}
+                {...register('sex')}
               >
-                <option
-                  selected
-                  disabled
-                >
-                  Не выбрано
-                </option>
+                <option disabled>Не выбрано</option>
                 <option
                   id="field-sex-option-man"
                   value="man"
                 >
-                  man
+                  {Sex.Man}
                 </option>
                 <option
                   id="field-sex-option-woman"
                   value="woman"
                 >
-                  woman
+                  {Sex.Woman}
                 </option>
               </select>
-              <span className="input-error_message"></span>
+              <span className="input-error_message input__error-message">
+                {errors.sex && `${errors.sex.message}`}
+              </span>
             </label>
           </form>
         </div>
         <div className="button-container">
           <button
             onClick={(evt) => {
-              navigate(AppRoute.Intro);
+              const form = document.querySelector('form');
+              const event = new CustomEvent('submit', {
+                detail: ButtonNavigateMarker.Back,
+                bubbles: true,
+                cancelable: true,
+              });
+              form?.dispatchEvent(event);
             }}
             id="button-back"
             className="popup-form__button-back"
@@ -149,7 +222,13 @@ export default function StepOneForm(): JSX.Element {
           </button>
           <button
             onClick={(evt) => {
-              navigate(AppRoute.StepTwo);
+              const form = document.querySelector('form');
+              const event = new CustomEvent('submit', {
+                detail: ButtonNavigateMarker.Next,
+                bubbles: true,
+                cancelable: true,
+              });
+              form?.dispatchEvent(event);
             }}
             id="button-next"
             className="popup-form__button-next"
