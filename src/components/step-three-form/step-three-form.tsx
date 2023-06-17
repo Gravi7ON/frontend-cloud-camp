@@ -79,7 +79,6 @@ export default function StepThreeForm(): JSX.Element {
       radio: Number(radio),
       advantages: advantages.map((advantage) => advantage.value),
     };
-    console.log(userProfileAdapter);
 
     await createProfile(userProfileAdapter);
   };
