@@ -1,16 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import Layout from '../layouts/layout';
 import { AppRoute, ButtonNavigateMarker } from 'src/constant';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from 'src/hooks/store.hooks';
 import { getStepThreeFormValues } from 'src/store/step-three-form/selectors';
 import { setStepThreeFormValues } from 'src/store/step-three-form/step-three-form';
-import { useState } from 'react';
 import ModalLayout from '../layouts/modal-layout';
 import SuccessModal from '../modals/success-modal';
 import ErrorModal from '../modals/error-modal';
+import { useCreateProfileMutation } from 'src/services/api';
+import { getStepTwoFormValues } from 'src/store/step-two-form/selectors';
+import { getStepOneFormValues } from 'src/store/step-one-form/selectors';
+import { getIntroFormValues } from 'src/store/intro-form/selectors';
+import { UserProfile } from 'src/types/user-profile';
+import Spinner from '../animate-ui/spinner';
 
 const MAX_ABOUT_CHAR = 200;
 
@@ -27,9 +32,13 @@ export default function StepThreeForm(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const { phone, email } = useAppSelector(getIntroFormValues);
+  const { nickname, name, surname, sex } = useAppSelector(getStepOneFormValues);
+  const { advantages, checkbox, radio } = useAppSelector(getStepTwoFormValues);
   const { about } = useAppSelector(getStepThreeFormValues);
 
-  const [submit] = useState(false);
+  const [createProfile, { isLoading, isSuccess, isError }] =
+    useCreateProfileMutation();
 
   const {
     register,
@@ -50,7 +59,24 @@ export default function StepThreeForm(): JSX.Element {
     const detail = (event?.nativeEvent as CustomEvent).detail;
     if (detail === ButtonNavigateMarker.Back) {
       navigate(AppRoute.StepTwo);
+      return;
     }
+
+    const userProfileAdapter: UserProfile = {
+      name,
+      nickname,
+      phone,
+      email,
+      sex,
+      surname,
+      about: formData.about,
+      checkbox: checkbox.map((checkbox) => Number(checkbox)),
+      radio: Number(radio),
+      advantages: advantages.map((advantage) => advantage.value),
+    };
+    console.log(userProfileAdapter);
+
+    await createProfile(userProfileAdapter);
   };
 
   return (
@@ -144,6 +170,7 @@ export default function StepThreeForm(): JSX.Element {
               <label>
                 <span className="input__label">About</span>
                 <textarea
+                  disabled={isLoading}
                   id="field-about"
                   placeholder="Placeholder"
                   {...register('about')}
@@ -169,6 +196,7 @@ export default function StepThreeForm(): JSX.Element {
             className="button-container"
           >
             <button
+              disabled={isLoading}
               onClick={(evt) => {
                 const form = document.querySelector('form');
                 const event = new CustomEvent('submit', {
@@ -186,6 +214,7 @@ export default function StepThreeForm(): JSX.Element {
             <button
               id="button-next"
               className="popup-form__button-submit"
+              disabled={isLoading}
               onClick={(evt) => {
                 const form = document.querySelector('form');
                 const event = new CustomEvent('submit', {
@@ -196,17 +225,17 @@ export default function StepThreeForm(): JSX.Element {
                 form?.dispatchEvent(event);
               }}
             >
-              Отправить
+              {isLoading ? <Spinner></Spinner> : 'Отправить'}
             </button>
           </div>
         </div>
       </Layout>
-      {submit && (
+      {isSuccess && (
         <ModalLayout>
           <SuccessModal></SuccessModal>
         </ModalLayout>
       )}
-      {submit && (
+      {isError && (
         <ModalLayout>
           <ErrorModal></ErrorModal>
         </ModalLayout>
