@@ -5,6 +5,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Layout from 'src/components/layouts/layout';
 import { AppRoute } from 'src/constant';
+import { useAppDispatch, useAppSelector } from 'src/hooks/store.hooks';
+import { getIntroFormValues } from 'src/store/intro-form/selectors';
+import { setFormValues } from 'src/store/intro-form/intro-form';
 
 const validationSchema = yup
   .object({
@@ -22,6 +25,9 @@ type FormData = yup.InferType<typeof validationSchema>;
 
 export default function IntroForm(): JSX.Element {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const { phone, email } = useAppSelector(getIntroFormValues);
 
   const {
     register,
@@ -32,7 +38,10 @@ export default function IntroForm(): JSX.Element {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<FormData> = (formData) => {
+    dispatch(setFormValues(formData));
+    navigate(AppRoute.StepOne);
+  };
 
   return (
     <Layout>
@@ -130,6 +139,7 @@ export default function IntroForm(): JSX.Element {
                 mask="+7 (999) 999-99-99"
                 alwaysShowMask
                 maskPlaceholder="+7 (___) ___-__-__"
+                defaultValue={phone}
                 {...register('phone')}
               />
               {errors.phone && (
@@ -140,7 +150,10 @@ export default function IntroForm(): JSX.Element {
             </label>
             <label>
               <span className="input__label">Email</span>
-              <input {...register('email')} />
+              <input
+                {...register('email')}
+                defaultValue={email}
+              />
               {errors.email && (
                 <span className="input__error-message">
                   {errors.email.message}
