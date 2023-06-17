@@ -26,7 +26,7 @@ export default function StepTwoForm(): JSX.Element {
     control,
     formState: { errors },
   } = useForm<Inputs>({
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
       advantages,
     },
