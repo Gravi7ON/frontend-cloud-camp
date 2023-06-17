@@ -12,6 +12,12 @@ export type StepOneFormState = {
   sex: string;
 };
 
+export type StepTwoFormState = {
+  advantages: { value: string }[];
+  checkbox: string[];
+  radio: string;
+};
+
 export type State = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;

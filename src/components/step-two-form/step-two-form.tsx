@@ -1,43 +1,59 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import Layout from '../layouts/layout';
 import { AppRoute, ButtonNavigateMarker } from 'src/constant';
+import { useAppDispatch, useAppSelector } from 'src/hooks/store.hooks';
+import { getStepTwoFormValues } from 'src/store/step-two-form/selectors';
+import { setStepTwoFormValues } from 'src/store/step-two-form/step-two-form';
 
 const INPUTS_GROUPE = [1, 2, 3];
-const INITIAL_ID = crypto.randomUUID();
 
 type Inputs = {
-  advantages: string[];
+  advantages: { value: string }[];
   checkbox: string[];
   radio: string;
 };
 
 export default function StepTwoForm(): JSX.Element {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const [advantages, setAdvantages] = useState([
-    `field-advantages-${INITIAL_ID}`,
-  ]);
+  const { advantages, checkbox, radio } = useAppSelector(getStepTwoFormValues);
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<Inputs>({
-    mode: 'all',
+    mode: 'onSubmit',
+    defaultValues: {
+      advantages,
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'advantages',
   });
 
   const onSubmit: SubmitHandler<Inputs> = (formData, event) => {
-    console.log(formData);
-
-    // dispatch(setStepOneFormValues(formData));
-    // const detail = (event?.nativeEvent as CustomEvent).detail;
-    // if (detail === ButtonNavigateMarker.Back) {
-    //   navigate(AppRoute.Intro);
-    // } else {
-    //   navigate(AppRoute.StepTwo);
-    // }
+    const filteredAdvantages = formData.advantages.filter((field) =>
+      Boolean(field.value)
+    );
+    const transformedFormData = {
+      ...formData,
+      advantages: filteredAdvantages.length
+        ? filteredAdvantages
+        : [{ value: '' }],
+    };
+    dispatch(setStepTwoFormValues(transformedFormData));
+    const detail = (event?.nativeEvent as CustomEvent).detail;
+    if (detail === ButtonNavigateMarker.Back) {
+      navigate(AppRoute.StepOne);
+    } else {
+      navigate(AppRoute.StepThree);
+    }
   };
 
   return (
@@ -130,34 +146,22 @@ export default function StepTwoForm(): JSX.Element {
               <span className="input__label">Advantages</span>
             </label>
             <ul id="advantages-list">
-              {advantages.map((field, index) => {
-                const uuid = field.replace(/field-advantages-/, '');
+              {fields.map((field, index) => {
+                const uuid = field.id;
 
                 return (
                   <li
-                    key={field}
+                    key={uuid}
                     className="advantages-list__container"
                   >
                     <input
-                      id={field}
+                      id={`field-advantages-${uuid}`}
                       className="step-one"
                       placeholder="Placeholder"
-                      {...register(`advantages.${index}`)}
+                      {...register(`advantages.${index}.value`)}
                     />
                     <svg
-                      onClick={(evt) => {
-                        const elementId = evt.currentTarget.id.replace(
-                          /button-remove-/,
-                          ''
-                        );
-                        setAdvantages((prev) =>
-                          [...prev].filter(
-                            (field) =>
-                              field.replace(/field-advantages-/, '') !==
-                              elementId
-                          )
-                        );
-                      }}
+                      onClick={() => remove(index)}
                       className="input-trash__remove"
                       id={`button-remove-${uuid}`}
                       xmlns="http://www.w3.org/2000/svg"
@@ -183,10 +187,7 @@ export default function StepTwoForm(): JSX.Element {
               id="button-add"
               onClick={(evt) => {
                 evt.preventDefault();
-                setAdvantages((prev) => [
-                  ...prev,
-                  `field-advantages-${crypto.randomUUID()}`,
-                ]);
+                append({ value: '' });
               }}
             >
               +
@@ -205,6 +206,7 @@ export default function StepTwoForm(): JSX.Element {
                     id={`field-checkbox-groupe-option-${item}`}
                     type="checkbox"
                     defaultValue={item}
+                    defaultChecked={checkbox.includes(item.toString())}
                     {...register('checkbox', {
                       required: 'choose no less one',
                     })}
@@ -234,6 +236,7 @@ export default function StepTwoForm(): JSX.Element {
                     className="field-checkbox-groupe-option"
                     id={`field-checkbox-groupe-option-${item}`}
                     type="radio"
+                    defaultChecked={radio === item.toString()}
                     defaultValue={item}
                     {...register('radio', { required: 'choose item' })}
                   />
