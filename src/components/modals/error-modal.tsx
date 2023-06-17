@@ -1,6 +1,35 @@
+import { useEffect } from 'react';
 import ModalLayout from '../layouts/modal-layout';
 
-export default function ErrorModal(): JSX.Element {
+type ErrorModalProps = {
+  changeShowStatus: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function ErrorModal({
+  changeShowStatus,
+}: ErrorModalProps): JSX.Element {
+  useEffect(() => {
+    const keyDownHandler = () => changeShowStatus((prev) => !prev);
+    const clickOutModalHandler = (evt: Event) => {
+      const modal = document.querySelector('.error-modal');
+
+      if (modal) {
+        const withinBoundaries = evt.composedPath().includes(modal);
+        if (!withinBoundaries) {
+          changeShowStatus((prev) => !prev);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener('click', clickOutModalHandler);
+
+    return () => {
+      document.removeEventListener('keydown', keyDownHandler);
+      document.removeEventListener('click', clickOutModalHandler);
+    };
+  });
+
   return (
     <ModalLayout>
       <div className="modal__wrapper">
@@ -15,6 +44,7 @@ export default function ErrorModal(): JSX.Element {
                 height="28"
                 viewBox="0 0 28 28"
                 fill="none"
+                onClick={() => changeShowStatus((prev) => !prev)}
               >
                 <rect
                   width="28"
@@ -55,6 +85,7 @@ export default function ErrorModal(): JSX.Element {
             <button
               id="button-close"
               className="modal__button-close"
+              onClick={() => changeShowStatus((prev) => !prev)}
             >
               Закрыть
             </button>

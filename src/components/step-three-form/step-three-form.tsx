@@ -16,6 +16,7 @@ import { getStepOneFormValues } from 'src/store/step-one-form/selectors';
 import { getIntroFormValues } from 'src/store/intro-form/selectors';
 import { UserProfile } from 'src/types/user-profile';
 import Spinner from '../animate-ui/spinner';
+import { useEffect, useState } from 'react';
 
 const MAX_ABOUT_CHAR = 200;
 
@@ -31,6 +32,8 @@ type FormData = yup.InferType<typeof validationSchema>;
 export default function StepThreeForm(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const { phone, email } = useAppSelector(getIntroFormValues);
   const { nickname, name, surname, sex } = useAppSelector(getStepOneFormValues);
@@ -52,6 +55,8 @@ export default function StepThreeForm(): JSX.Element {
       about,
     },
   });
+
+  useEffect(() => setShowErrorModal(isError), [isError]);
 
   const onSubmit: SubmitHandler<FormData> = async (formData, event) => {
     dispatch(setStepThreeFormValues(formData));
@@ -235,9 +240,9 @@ export default function StepThreeForm(): JSX.Element {
           <SuccessModal></SuccessModal>
         </ModalLayout>
       )}
-      {isError && (
+      {showErrorModal && (
         <ModalLayout>
-          <ErrorModal></ErrorModal>
+          <ErrorModal changeShowStatus={setShowErrorModal}></ErrorModal>
         </ModalLayout>
       )}
     </>

@@ -7,7 +7,10 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['profileApi/executeMutation/fulfilled'],
+        ignoredActions: [
+          'profileApi/executeMutation/fulfilled',
+          'profileApi/executeMutation/rejected',
+        ],
         ignoredActionPaths: ['payload'],
       },
     }).concat(api.middleware),
