@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import Layout from '../layouts/layout';
 import { AppRoute, ButtonNavigateMarker } from 'src/constant';
 import { useAppDispatch, useAppSelector } from 'src/hooks/store.hooks';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { getStepOneFormValues } from 'src/store/step-one-form/selectors';
 import { setStepOneFormValues } from 'src/store/step-one-form/step-one-form';
 
