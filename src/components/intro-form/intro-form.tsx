@@ -155,7 +155,7 @@ export default function IntroForm(): JSX.Element {
                 defaultValue={email}
               />
               {errors.email && (
-                <span className="input__error-message error-message__intro error-message__intro">
+                <span className="input__error-message error-message__intro">
                   {errors.email.message}
                 </span>
               )}
